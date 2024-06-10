@@ -13,6 +13,9 @@ psycopg2 = "*"
 polars = "*"
 mkdocs = "*"
 mkdocs-mermaid2-plugin = "*"
+pyarrow = "*"
+pandera = {extras = ["io"], version = "*"}
+boto3 = "*"
 
 [dev-packages]
 
