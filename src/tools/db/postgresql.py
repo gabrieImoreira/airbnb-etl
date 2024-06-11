@@ -35,9 +35,9 @@ class PostgreSQLConnection:
         # Executar a query e retornar os resultados
         return query.all()
 
-    def insert_room(self, name, host_id, host_name, neighbourhood_group, neighbouhood, room_type,
+    def insert_room(self, name, host_id, host_name, neighbourhood_group, neighbourhood, room_type,
          price, currency, minimum_nights, number_of_reviews, last_review, rating, bedrooms,
-         beds, baths, execution_date, origin):
+         beds, baths, created_at, origin):
         
         existing_record = self.session.query(AirbnbRooms).filter_by(name=name, host_name=host_name).first()
         if existing_record:
@@ -65,4 +65,16 @@ class PostgreSQLConnection:
             print("Error during update:", e)
             self.session.rollback()
             return False
+    
+    def bulk_upsert_rooms(self, df):
+        try:
+            records = df.to_dict(orient='records')
+            rooms = [AirbnbRooms(**record) for record in records]
+            
+            self.session.bulk_save_objects(rooms, update_changed_only=True)
+            self.session.commit()
+        except SQLAlchemyError as e:
+            print("Error during bulk insert/update:", e)
+            self.session.rollback()
+
             
